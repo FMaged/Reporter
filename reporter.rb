@@ -1,4 +1,112 @@
-cf the files to console (default: false)
+class MetasploitModule < Msf::Post
+    include Msf::Post::File
+    include Msf::Post::Linux::System
+
+    DEFAULT_PATHS = {
+    Os: {
+      os_release: '/etc/os-release',
+      proc_version: '/proc/version',
+      lsb_release: '/etc/lsb-release',
+      issue: '/etc/issue'
+    },
+    Hardware: {
+      cpuinfo: '/proc/cpuinfo',
+      meminfo: '/proc/meminfo',
+      dmi_product: '/sys/class/dmi/id/product_name',
+      dmi_vendor: '/sys/class/dmi/id/sys_vendor'
+    },
+    Network: {
+      hostname: '/etc/hostname',
+      hosts: '/etc/hosts',
+      arp: '/proc/net/arp',
+      route: '/proc/net/route',
+      resolv: '/etc/resolv.conf'
+    },
+    User: {
+      passwd: '/etc/passwd',
+      shadow: '/etc/shadow',
+      group: '/etc/group',
+      sudoers: '/etc/sudoers',
+      bash_history: File.join(ENV['HOME'] || '/root', '.bash_history')
+    },
+    Configuration: { 
+        sysctl: '/etc/sysctl.conf',
+        fstab: '/etc/fstab',
+        profile: '/etc/profile',
+        bashrc: '/etc/bash.bashrc',
+        motd: '/etc/motd',
+        ssh_config: '/etc/ssh/sshd_config',
+        cron: '/etc/crontab',
+        apache: '/etc/apache2/apache2.conf',
+        nginx: '/etc/nginx/nginx.conf',
+        mysql: '/etc/mysql/my.cnf',
+        postgresql: '/etc/postgresql/postgresql.conf',
+    },
+    Logs: {
+        auth_log: '/var/log/auth.log', 
+        syslog: '/var/log/syslog',
+        dmesg: '/var/log/dmesg',
+        kern_log: '/var/log/kern.log',
+        apache_log: '/var/log/apache2/access.log',
+        nginx_log: '/var/log/nginx/access.log',
+        mysql_log: '/var/log/mysql/error.log',
+        postgresql_log: '/var/log/postgresql/postgresql.log'
+    }
+    
+  }.freeze
+    
+
+    def initialize(info = {})
+        super(
+            update_info(
+                info,
+                'Name'        => 'Linux Reporter',
+                'Description' => %q{
+                Linux Reporter Post Module
+
+                This module collects system information and configuration files from a Linux target. 
+                It supports both Meterpreter and command shell sessions. The module organizes the 
+                collected data into categories and saves them locally in a structured report 
+                directory under the user's Documents folder (or a custom location).
+
+                Categories:
+                - Os            : OS release and kernel information
+                - Hardware      : CPU, memory, and system vendor details
+                - Network       : Hostname, routing, ARP, and DNS info
+                - User          : User accounts, groups, sudoers, bash history
+                - Configuration : System configuration files (sysctl, fstab, ssh, cron, web server, databases)
+                - Logs          : System and service logs
+                - Custom        : Any paths provided via PATHS_FILE
+
+                Usage:
+
+                1. Save all categories to the default location without printing:
+                set PRINT_CONTENT false
+                run
+
+                2. Save only specific categories (e.g., OS and User) to a custom directory:
+                set OUTPUT_DIR /home/<your_user>/Desktop
+                set CATEGORIES Os,User
+                set PRINT_CONTENT false
+                run
+
+                3. Print the contents of files for selected categories without saving:
+                set CATEGORIES Os,Network
+                set PRINT_CONTENT true
+                run
+
+                4. Load custom paths from a file:
+                set PATHS_FILE /home/<your_user>/custom_paths.txt
+                set CATEGORIES custom
+                run
+
+                Options:
+
+                - PATHS_FILE   : Optional file containing custom paths to collect
+                - OUTPUT_DIR   : Directory where the report will be saved (default: ~/Documents)
+                - REPORT_NAME  : Custom report name (default: linux_report_<timestamp>)
+                - CATEGORIES   : Comma-separated list of categories to save or print (default: all)
+                - PRINT_CONTENT: Boolean, whether to print the contents of the files to console (default: false)
 
                 Notes:
                 - If the report directory already exists, a numbered suffix (_1, _2, etc.) will be added automatically.
@@ -218,112 +326,4 @@ cf the files to console (default: false)
         nil 
     end
 end
-lass MetasploitModule < Msf::Post
-    include Msf::Post::File
-    include Msf::Post::Linux::System
 
-    DEFAULT_PATHS = {
-    Os: {
-      os_release: '/etc/os-release',
-      proc_version: '/proc/version',
-      lsb_release: '/etc/lsb-release',
-      issue: '/etc/issue'
-    },
-    Hardware: {
-      cpuinfo: '/proc/cpuinfo',
-      meminfo: '/proc/meminfo',
-      dmi_product: '/sys/class/dmi/id/product_name',
-      dmi_vendor: '/sys/class/dmi/id/sys_vendor'
-    },
-    Network: {
-      hostname: '/etc/hostname',
-      hosts: '/etc/hosts',
-      arp: '/proc/net/arp',
-      route: '/proc/net/route',
-      resolv: '/etc/resolv.conf'
-    },
-    User: {
-      passwd: '/etc/passwd',
-      shadow: '/etc/shadow',
-      group: '/etc/group',
-      sudoers: '/etc/sudoers',
-      bash_history: File.join(ENV['HOME'] || '/root', '.bash_history')
-    },
-    Configuration: { 
-        sysctl: '/etc/sysctl.conf',
-        fstab: '/etc/fstab',
-        profile: '/etc/profile',
-        bashrc: '/etc/bash.bashrc',
-        motd: '/etc/motd',
-        ssh_config: '/etc/ssh/sshd_config',
-        cron: '/etc/crontab',
-        apache: '/etc/apache2/apache2.conf',
-        nginx: '/etc/nginx/nginx.conf',
-        mysql: '/etc/mysql/my.cnf',
-        postgresql: '/etc/postgresql/postgresql.conf',
-    },
-    Logs: {
-        auth_log: '/var/log/auth.log', 
-        syslog: '/var/log/syslog',
-        dmesg: '/var/log/dmesg',
-        kern_log: '/var/log/kern.log',
-        apache_log: '/var/log/apache2/access.log',
-        nginx_log: '/var/log/nginx/access.log',
-        mysql_log: '/var/log/mysql/error.log',
-        postgresql_log: '/var/log/postgresql/postgresql.log'
-    }
-    
-  }.freeze
-    
-
-    def initialize(info = {})
-        super(
-            update_info(
-                info,
-                'Name'        => 'Linux Reporter',
-                'Description' => %q{
-                Linux Reporter Post Module
-
-                This module collects system information and configuration files from a Linux target. 
-                It supports both Meterpreter and command shell sessions. The module organizes the 
-                collected data into categories and saves them locally in a structured report 
-                directory under the user's Documents folder (or a custom location).
-
-                Categories:
-                - Os            : OS release and kernel information
-                - Hardware      : CPU, memory, and system vendor details
-                - Network       : Hostname, routing, ARP, and DNS info
-                - User          : User accounts, groups, sudoers, bash history
-                - Configuration : System configuration files (sysctl, fstab, ssh, cron, web server, databases)
-                - Logs          : System and service logs
-                - Custom        : Any paths provided via PATHS_FILE
-
-                Usage:
-
-                1. Save all categories to the default location without printing:
-                set PRINT_CONTENT false
-                run
-
-                2. Save only specific categories (e.g., OS and User) to a custom directory:
-                set OUTPUT_DIR /home/<your_user>/Desktop
-                set CATEGORIES Os,User
-                set PRINT_CONTENT false
-                run
-
-                3. Print the contents of files for selected categories without saving:
-                set CATEGORIES Os,Network
-                set PRINT_CONTENT true
-                run
-
-                4. Load custom paths from a file:
-                set PATHS_FILE /home/<your_user>/custom_paths.txt
-                set CATEGORIES custom
-                run
-
-                Options:
-
-                - PATHS_FILE   : Optional file containing custom paths to collect
-                - OUTPUT_DIR   : Directory where the report will be saved (default: ~/Documents)
-                - REPORT_NAME  : Custom report name (default: linux_report_<timestamp>)
-                - CATEGORIES   : Comma-separated list of categories to save or print (default: all)
-                - PRINT_CONTENT: Boolean, whether to print the contents o
