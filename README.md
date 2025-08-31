@@ -24,32 +24,6 @@ Collected data can be saved locally in a structured report folder or printed dir
 
 ---
 
-## Usage  
-Examples of how to run the module inside Metasploit:
-
-1. **Save all categories to the default location**:
-   ```bash
-   set PRINT_CONTENT false
-   run
-
-2. **Save only OS and User categories to a custom directory**:
-   ```bash
-   set OUTPUT_DIR /home/<your_user>/Desktop
-   set CATEGORIES Os,User
-   set PRINT_CONTENT false
-   run
-
-3. **Print the contents without saving**:
-   ```bash
-   set CATEGORIES Os,Network
-   set PRINT_CONTENT true
-   run
-
-4. **Load custom paths from a file**
-   ```bash
-   set PATHS_FILE /home/<your_user>/custom_paths.txt
-   set CATEGORIES custom
-   run
 
 ## Learning Goals
 
