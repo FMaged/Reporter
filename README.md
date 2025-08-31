@@ -51,6 +51,19 @@ Examples of how to run the module inside Metasploit:
    set CATEGORIES custom
    run
 
+## Learning Goals
+
+This project helped me learn:
+
+- How **Metasploit post modules** are structured (options, datastore, categories)  
+- Important **Linux system files** and where critical information is stored  
+- Writing and organizing code in **Ruby**  
+- Basics of **post-exploitation reporting** workflows
 
 
-   
+## Disclaimer ⚠️
+
+This module is for **educational purposes only**.  
+Running it on systems you do not own or have explicit permission to test is **illegal** and against Metasploit’s intended use.  
+Use it only in **controlled environments**, such as labs or authorized penetration tests.
+
